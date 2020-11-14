@@ -66,7 +66,7 @@ if __name__ == "__main__":
     #training
     iteration = 0
     #row = 0
-    learning_rate = .77
+    learning_rate = .65
     max_iters = 1000
 
     word_vecs = []
