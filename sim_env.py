@@ -12,10 +12,17 @@ class Model:
         - iterates thru training data num_iterations times
         - adjust weights based on correctness of each iteration
         - need to determine which kind of tuning algo i want to use
+        - may make 3 binary classifiers:
+            1) do action?
+            2) if do action: move or turn
+            3) if move: back or forwards
+            4) if turn: left or right
         """
         print(data)
 
     #each entity has its own model that governs its movements
+ALIVE = 1
+DEAD = 0
 class Entity:
     def __init__(self, health, action_cost, x, y, group):
         self.health = health
@@ -23,19 +30,30 @@ class Entity:
         self.x = x
         self.y = y
         self.group = group # a group id signifying if entities are hostile or friendly
+        self.state = ALIVE
 
     #moves an entity
     def move(self, map_width, map_height, x_move, y_move):
-        self.x += x_move
-        self.y += y_move
-        if self.y >= map_height:
-            self.y = map_height - 1
-        if self.y < 0:
-            self.y = 0
-        if self.x >= map_width:
-            self.x = map_width - 1
-        if self.x < 0:
-            self.x = 0
+        if self.state == DEAD:
+            self.x = -1
+            self.y = -1
+        else:
+            self.x += x_move
+            self.y += y_move
+            if self.y >= map_height:
+                self.y = map_height - 1
+            if self.y < 0:
+                self.y = 0
+            if self.x >= map_width:
+                self.x = map_width - 1
+            if self.x < 0:
+                self.x = 0
+        
+    def decrease_health(self):
+        self.health -= self.action_cost
+        if self.health <= 0:
+            self.health = 0
+            self.state = DEAD
         
 class Environment:
     def __init__(self, width, height):
@@ -91,6 +109,11 @@ class Environment:
             x_move = 0
             y_move = 0
             e.move(self.width, self.height, x_move, y_move)
+            e.decrease_health()
         
 if __name__ == "__main__":
     env = Environment(20, 20)
+    env.spawn_entity()
+
+    while True:
+        env.simulate()

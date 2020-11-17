@@ -23,7 +23,7 @@ def within_margin(test_val, margin, expected_val):
 
 if __name__ == "__main__":
     data = pd.read_csv('tripadvisor_hotel_reviews.csv')
-    data = data.sample(1000).reset_index()
+    data = data.sample(900).reset_index()
     #convert data into term vector maybe?
     output_label = 'Rating' 
     text_label = 'Review'
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     generic_word_vector = {}
     index = 0
     #Can try different models with different subsets of the words to see which are most relevant
-    max_index = len(all_words)/50
+    max_index = 300#len(all_words)/50
     print('max_index:', max_index)
     for word in all_words:
         if index >= max_index:
@@ -48,13 +48,14 @@ if __name__ == "__main__":
         index += 1
     
     MAX_LENGTH = len(generic_word_vector)
-    bias = default_weight
+    bias = default_weight#np.load("bias.npy") #default_weight
     #initializes the weight vector
     for x in range(MAX_LENGTH):
         col = []
         for y in range(MAX_LENGTH):
             col.append(default_weight)
         weights.append(col)
+    #weights = np.load("weights.npy")
     #vec = [1, 2, 5]
     #vec = [1, 1, 1]
     #actual_vec = np.array([vec])
@@ -136,7 +137,11 @@ if __name__ == "__main__":
             row += 1
         learning_rate = learning_rate * .99 #slowly decrease learning rate
         print('iteration: ', iteration, ' accuracy', correct_examples/total_examples)
+        np.save("weights", weights)
+        np.save("bias", bias)
         iteration += 1
+
+    
 
         #now we dot square_mat with weights
     #print('data:\n', data[output_label])
